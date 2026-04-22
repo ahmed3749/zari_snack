@@ -3,6 +3,8 @@ import SectionHeading from "../../../components/SectionHeading";
 import { requireAdminSession } from "@/lib/admin-auth";
 import { getDashboardData } from "@/lib/restaurant-data";
 
+type DashboardOrder = Awaited<ReturnType<typeof getDashboardData>>["recentOrders"][number];
+
 function formatPrice(value: number) {
   return `${value.toFixed(2)} DH`;
 }
@@ -63,7 +65,7 @@ export default async function AdminDashboardPage() {
             <p className="mt-4 text-sm text-slate-400">Aucune commande enregistree pour le moment.</p>
           ) : (
             <div className="mt-4 space-y-3">
-              {recentOrders.map((order) => (
+              {recentOrders.map((order: DashboardOrder) => (
                 <div
                   key={order.id}
                   className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4"

@@ -79,7 +79,11 @@ function playNotificationSound() {
     return;
   }
 
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  const audioGlobal = globalThis as typeof globalThis & {
+    AudioContext?: typeof AudioContext;
+    webkitAudioContext?: typeof AudioContext;
+  };
+  const AudioContextClass = audioGlobal.AudioContext ?? audioGlobal.webkitAudioContext;
 
   if (!AudioContextClass) {
     return;
