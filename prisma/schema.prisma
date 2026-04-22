@@ -1,0 +1,191 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum OrderStatus {
+  NOUVELLE
+  CONFIRMEE
+  PREPAREE
+  LIVREE
+  ANNULEE
+}
+
+model Admin {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id           String    @id @default(cuid())
+  name         String    @unique
+  description  String?
+  active       Boolean   @default(true)
+  displayOrder Int       @default(0)
+  products     Product[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([active])
+  @@index([displayOrder])
+}
+
+model Product {
+  id                String              @id @default(cuid())
+  name              String              @unique
+  description       String?
+  imageUrl          String?
+  basePrice         Decimal             @db.Decimal(10, 2)
+  active            Boolean             @default(true)
+  available         Boolean             @default(true)
+  categoryId        String
+  category          Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  sizes             ProductSize[]
+  optionLinks       ProductOptionLink[]
+  orderItems        OrderItem[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([categoryId])
+  @@index([active])
+  @@index([available])
+}
+
+model ProductSize {
+  id            String   @id @default(cuid())
+  name          String
+  priceModifier Decimal  @default(0) @db.Decimal(10, 2)
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([productId, name])
+  @@index([productId])
+}
+
+model Sauce {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  price       Decimal             @default(0) @db.Decimal(10, 2)
+  active      Boolean             @default(true)
+  optionLinks ProductOptionLink[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([active])
+}
+
+model Extra {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  price       Decimal             @default(0) @db.Decimal(10, 2)
+  active      Boolean             @default(true)
+  optionLinks ProductOptionLink[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([active])
+}
+
+model Drink {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  price       Decimal             @db.Decimal(10, 2)
+  active      Boolean             @default(true)
+  optionLinks ProductOptionLink[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([active])
+}
+
+model ProductOptionLink {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sauceId   String?
+  sauce     Sauce?   @relation(fields: [sauceId], references: [id], onDelete: Cascade)
+  extraId   String?
+  extra     Extra?   @relation(fields: [extraId], references: [id], onDelete: Cascade)
+  drinkId   String?
+  drink     Drink?   @relation(fields: [drinkId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, sauceId, extraId, drinkId])
+  @@index([productId])
+  @@index([sauceId])
+  @@index([extraId])
+  @@index([drinkId])
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  fullName  String?
+  phone     String   @unique
+  orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  customerId      String?
+  customer        Customer?   @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  customerName    String
+  customerPhone   String
+  deliveryAddress String
+  city            String
+  note            String?
+  total           Decimal     @db.Decimal(10, 2)
+  status          OrderStatus @default(NOUVELLE)
+  items           OrderItem[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([customerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                String   @id @default(cuid())
+  orderId           String
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId         String
+  product           Product  @relation(fields: [productId], references: [id], onDelete: Restrict)
+  productName       String
+  quantity          Int
+  basePrice         Decimal  @db.Decimal(10, 2)
+  selectedSizeName  String?
+  selectedSizePrice Decimal? @db.Decimal(10, 2)
+  options           Json     @default("{}")
+  subtotal          Decimal  @db.Decimal(10, 2)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+model RestaurantSettings {
+  id              String   @id @default(cuid())
+  restaurantName  String
+  logoUrl         String?
+  whatsappNumber  String
+  address         String?
+  openingHours    String?
+  deliveryFee     Decimal  @default(0) @db.Decimal(10, 2)
+  welcomeMessage  String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
