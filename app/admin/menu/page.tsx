@@ -35,6 +35,7 @@ type OptionRecord = {
 type AdminCatalogData = Awaited<ReturnType<typeof getAdminCatalogData>>;
 type CategoryRecord = AdminCatalogData["categories"][number];
 type ProductRecord = CategoryRecord["products"][number];
+type ProductOptionLinkRecord = ProductRecord["optionLinks"][number];
 type ViewMode = "overview" | "add-category" | "add-product" | "categories" | "products" | "options";
 
 const SIZE_OPTIONS = [
@@ -57,13 +58,13 @@ function ProductFormFields({
   product?: ProductRecord;
 }) {
   const selectedSauceIds = new Set(
-    product?.optionLinks.flatMap((link) => (link.sauce ? [link.sauce.id] : [])) ?? []
+    product?.optionLinks.flatMap((link: ProductOptionLinkRecord) => (link.sauce ? [link.sauce.id] : [])) ?? []
   );
   const selectedExtraIds = new Set(
-    product?.optionLinks.flatMap((link) => (link.extra ? [link.extra.id] : [])) ?? []
+    product?.optionLinks.flatMap((link: ProductOptionLinkRecord) => (link.extra ? [link.extra.id] : [])) ?? []
   );
   const selectedDrinkIds = new Set(
-    product?.optionLinks.flatMap((link) => (link.drink ? [link.drink.id] : [])) ?? []
+    product?.optionLinks.flatMap((link: ProductOptionLinkRecord) => (link.drink ? [link.drink.id] : [])) ?? []
   );
   const basePrice = product ? Number(product.basePrice) : 0;
   const sizeMap = new Map(
