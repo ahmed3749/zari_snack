@@ -7,6 +7,10 @@ import { getShortOrderReference } from "@/lib/order-reference";
 import { ORDER_STATUSES, OrderStatus, type OrderStatus as OrderStatusValue } from "@/lib/order-status";
 import { getOrdersList, getRestaurantSettings } from "@/lib/restaurant-data";
 
+type OrdersList = Awaited<ReturnType<typeof getOrdersList>>;
+type OrderRecord = OrdersList[number];
+type OrderItemRecord = OrderRecord["items"][number];
+
 function formatPrice(value: number) {
   return `${value.toFixed(2)} DH`;
 }
@@ -43,7 +47,8 @@ function getStatusMeta(status: OrderStatusValue) {
 
 export default async function AdminOrdersPage() {
   await requireAdminSession();
-  const [orders, settings] = await Promise.all([getOrdersList(), getRestaurantSettings()]);
+  const [orders, settings]: [OrdersList, Awaited<ReturnType<typeof getRestaurantSettings>>] =
+    await Promise.all([getOrdersList(), getRestaurantSettings()]);
   const whatsappNumber = settings?.whatsappNumber?.replace(/\D/g, "") ?? "";
 
   return (
@@ -78,7 +83,7 @@ export default async function AdminOrdersPage() {
             </button>
           </form>
 
-          {orders.map((order) => {
+          {orders.map((order: OrderRecord) => {
             const orderReference = getShortOrderReference(order.id);
             const statusMeta = getStatusMeta(order.status);
             const whatsappLink = whatsappNumber
@@ -157,7 +162,7 @@ export default async function AdminOrdersPage() {
                 </div>
 
                 <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-                  {order.items.map((item) => (
+                  {order.items.map((item: OrderItemRecord) => (
                     <div key={item.id} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2">

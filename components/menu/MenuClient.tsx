@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { useCart } from "@/components/cart/CartProvider";
 import ProductConfigurator from "@/components/menu/ProductConfigurator";
-import type { MenuCategory } from "@/components/menu/types";
+import type { MenuCategory, MenuProduct } from "@/components/menu/types";
 
 type MenuClientProps = {
   categories: MenuCategory[];
@@ -17,7 +17,7 @@ export default function MenuClient({ categories }: MenuClientProps) {
   const { addToCart } = useCart();
 
   const selectedCategory =
-    categories.find((category) => category.id === selectedCategoryId) ?? null;
+    categories.find((category: MenuCategory) => category.id === selectedCategoryId) ?? null;
 
   return (
     <>
@@ -38,7 +38,7 @@ export default function MenuClient({ categories }: MenuClientProps) {
 
           <div className="flex w-full max-w-xl flex-col gap-3">
             <div className="flex flex-wrap gap-2">
-              {[{ id: ALL_CATEGORIES_ID, name: "Tous" }, ...categories].map((category) => {
+              {[{ id: ALL_CATEGORIES_ID, name: "Tous" }, ...categories].map((category: { id: string; name: string }) => {
                 const isActive = category.id === selectedCategoryId;
 
                 return (
@@ -73,7 +73,7 @@ export default function MenuClient({ categories }: MenuClientProps) {
           </div>
         ) : selectedCategoryId === ALL_CATEGORIES_ID ? (
           <div className="space-y-6">
-            {categories.map((category) => (
+            {categories.map((category: MenuCategory) => (
               <section key={category.id} className="space-y-4">
                 <div className="brand-shell rounded-[2rem] p-5">
                   <div className="relative z-10 flex flex-col gap-2.5 sm:flex-row sm:items-end sm:justify-between">
@@ -97,7 +97,7 @@ export default function MenuClient({ categories }: MenuClientProps) {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-                  {category.products.map((product) => (
+                  {category.products.map((product: MenuProduct) => (
                     <ProductConfigurator
                       key={product.id}
                       product={product}
@@ -132,7 +132,7 @@ export default function MenuClient({ categories }: MenuClientProps) {
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {selectedCategory.products.map((product) => (
+              {selectedCategory.products.map((product: MenuProduct) => (
                 <ProductConfigurator
                   key={product.id}
                   product={product}

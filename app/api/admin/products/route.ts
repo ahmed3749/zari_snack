@@ -3,6 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAdminSessionFromRequest } from "@/lib/admin-auth";
 import { getAdminMenuCategories } from "@/lib/restaurant-data";
 
+type AdminMenuCategories = Awaited<ReturnType<typeof getAdminMenuCategories>>;
+type AdminMenuCategory = AdminMenuCategories[number];
+type AdminMenuProduct = AdminMenuCategory["products"][number];
+type AdminMenuProductSize = AdminMenuProduct["sizes"][number];
+type AdminMenuProductOptionLink = AdminMenuProduct["optionLinks"][number];
+
 export async function GET(request: NextRequest) {
   try {
     const admin = getAdminSessionFromRequest(request);
@@ -14,20 +20,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const categories = await getAdminMenuCategories();
-    const products = categories.flatMap((category) =>
-      category.products.map((product) => ({
+    const categories: AdminMenuCategories = await getAdminMenuCategories();
+    const products = categories.flatMap((category: AdminMenuCategory) =>
+      category.products.map((product: AdminMenuProduct) => ({
         ...product,
         basePrice: Number(product.basePrice),
         category: {
           id: category.id,
           name: category.name,
         },
-        sizes: product.sizes.map((size) => ({
+        sizes: product.sizes.map((size: AdminMenuProductSize) => ({
           ...size,
           priceModifier: Number(size.priceModifier),
         })),
-        optionLinks: product.optionLinks.map((link) => ({
+        optionLinks: product.optionLinks.map((link: AdminMenuProductOptionLink) => ({
           id: link.id,
           sauce: link.sauce
             ? { name: link.sauce.name, price: Number(link.sauce.price) }

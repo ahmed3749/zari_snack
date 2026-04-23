@@ -122,8 +122,8 @@ export default function AdminNotifications({
     const storedIds = readStoredNotificationIds(adminId);
 
     return notifications
-      .map((notification) => notification.id)
-      .filter((id) => storedIds.has(id));
+      .map((notification: AdminNotification) => notification.id)
+      .filter((id: string) => storedIds.has(id));
   });
   const containerRef = useRef<HTMLDivElement>(null);
   const previousUnreadCountRef = useRef<number | null>(null);
@@ -154,7 +154,7 @@ export default function AdminNotifications({
     () =>
       new Set(
         readIds.filter((id) =>
-          notifications.some((notification) => notification.id === id),
+          notifications.some((notification: AdminNotification) => notification.id === id),
         ),
       ),
     [notifications, readIds],
@@ -162,14 +162,14 @@ export default function AdminNotifications({
 
   const items = useMemo(
     () =>
-      notifications.map((notification) => ({
+      notifications.map((notification: AdminNotification) => ({
         ...notification,
         unread: !readIdsSet.has(notification.id),
       })),
     [notifications, readIdsSet],
   );
 
-  const unreadCount = items.filter((notification) => notification.unread).length;
+  const unreadCount = items.filter((notification: AdminNotification) => notification.unread).length;
 
   useEffect(() => {
     if (previousUnreadCountRef.current === null) {
@@ -278,7 +278,7 @@ export default function AdminNotifications({
             </div>
           ) : (
             <div className="max-h-[24rem] overflow-y-auto p-2">
-              {items.map((notification) => (
+              {items.map((notification: AdminNotification) => (
                 <Link
                   key={notification.id}
                   href={notification.href}

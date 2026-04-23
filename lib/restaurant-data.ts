@@ -180,7 +180,7 @@ export async function getAdminNotifications() {
     },
   });
 
-  const notifications: AdminNotification[] = newOrders.map((order) => {
+  const notifications: AdminNotification[] = newOrders.map((order: (typeof newOrders)[number]) => {
     const reference = getShortOrderReference(order.id);
 
     return {

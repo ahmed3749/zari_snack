@@ -63,11 +63,11 @@ function describeOptions(
   }
 
   if (sauces.length > 0) {
-    parts.push(`Sauces: ${sauces.map((option) => option.name).join(", ")}`);
+    parts.push(`Sauces: ${sauces.map((option: MenuProductOption) => option.name).join(", ")}`);
   }
 
   if (extras.length > 0) {
-    parts.push(`Extras: ${extras.map((option) => option.name).join(", ")}`);
+    parts.push(`Extras: ${extras.map((option: MenuProductOption) => option.name).join(", ")}`);
   }
 
   if (drink) {
@@ -92,11 +92,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [form, setForm] = useState<CheckoutForm>(initialForm);
 
   const cartCount = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
+    () => cartItems.reduce((sum: number, item: CartItem) => sum + item.quantity, 0),
     [cartItems]
   );
   const cartTotal = useMemo(
-    () => cartItems.reduce((sum, item) => sum + item.subtotal, 0),
+    () => cartItems.reduce((sum: number, item: CartItem) => sum + item.subtotal, 0),
     [cartItems]
   );
 
@@ -117,9 +117,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }
 
   function updateItemQuantity(itemId: string, nextQuantity: number) {
-    setCartItems((current) =>
+    setCartItems((current: CartItem[]) =>
       current
-        .map((item) =>
+        .map((item: CartItem) =>
           item.id === itemId
             ? {
                 ...item,
@@ -128,12 +128,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
               }
             : item
         )
-        .filter((item) => item.quantity > 0)
+        .filter((item: CartItem) => item.quantity > 0)
     );
   }
 
   function removeItem(itemId: string) {
-    setCartItems((current) => current.filter((item) => item.id !== itemId));
+    setCartItems((current: CartItem[]) => current.filter((item: CartItem) => item.id !== itemId));
   }
 
   function setFormField(field: keyof CheckoutForm, value: string) {
@@ -188,8 +188,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         productId: item.productId,
         quantity: item.quantity,
         selectedSizeId: item.selectedSize?.id ?? null,
-        selectedSauceIds: item.selectedSauces.map((option) => option.id),
-        selectedExtraIds: item.selectedExtras.map((option) => option.id),
+        selectedSauceIds: item.selectedSauces.map((option: MenuProductOption) => option.id),
+        selectedExtraIds: item.selectedExtras.map((option: MenuProductOption) => option.id),
         selectedDrinkId: item.selectedDrink?.id ?? null,
       })),
     };
@@ -264,7 +264,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             </div>
 
             <div className="mt-6 grid gap-3 md:grid-cols-3">
-              {steps.map((step) => {
+              {steps.map((step: { id: CartStep; label: string }) => {
                 const isActive = currentStep === step.id;
                 const isDone = currentStep > step.id;
 
@@ -305,7 +305,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                   </div>
                 ) : (
                   <div className="mt-6 space-y-3.5">
-                    {cartItems.map((item) => {
+                    {cartItems.map((item: CartItem) => {
                       const optionLines = describeOptions(
                         item.selectedSize,
                         item.selectedSauces,
@@ -323,7 +323,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                               <h3 className="font-semibold text-slate-900">{item.productName}</h3>
                               {optionLines.length > 0 ? (
                                 <div className="mt-2 space-y-1 text-xs text-slate-500">
-                                  {optionLines.map((line) => (
+                                  {optionLines.map((line: string) => (
                                     <p key={line}>{line}</p>
                                   ))}
                                 </div>

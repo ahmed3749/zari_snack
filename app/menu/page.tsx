@@ -1,9 +1,33 @@
 import PublicFooter from "../../components/PublicFooter";
 import PublicHeader from "../../components/PublicHeader";
 import MenuClient from "../../components/menu/MenuClient";
+import type { MenuCategory, MenuProduct, MenuProductOption, MenuProductSize } from "../../components/menu/types";
+import type { Prisma } from "@prisma/client";
 
 import { getProductImageSrc } from "@/lib/product-image";
 import { prisma } from "@/lib/prisma";
+
+type MenuCategoryRecord = Prisma.CategoryGetPayload<{
+  include: {
+    products: {
+      include: {
+        sizes: true;
+        optionLinks: {
+          include: {
+            sauce: true;
+            extra: true;
+            drink: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+type MenuCategories = MenuCategoryRecord[];
+type MenuProductRecord = MenuCategoryRecord["products"][number];
+type MenuProductSizeRecord = MenuProductRecord["sizes"][number];
+type MenuProductOptionLinkRecord = MenuProductRecord["optionLinks"][number];
+type HeroEntry = MenuProductRecord & { categoryName: string };
 
 export default async function MenuPage({
   searchParams,
@@ -13,7 +37,7 @@ export default async function MenuPage({
   }>;
 }) {
   await searchParams;
-  const categories = await prisma.category.findMany({
+  const categories: MenuCategories = await prisma.category.findMany({
     where: {
       active: true,
       products: {
@@ -45,13 +69,54 @@ export default async function MenuPage({
     },
   });
 
-  const heroEntry =
-    categories.flatMap((category) =>
-      category.products.map((product) => ({
+  const heroEntry: HeroEntry | null =
+    categories.flatMap((category: MenuCategoryRecord) =>
+      category.products.map((product: MenuProductRecord) => ({
         ...product,
         categoryName: category.name,
       }))
     )[0] ?? null;
+
+  const menuCategories: MenuCategory[] = categories.map((category: MenuCategoryRecord) => ({
+    id: category.id,
+    name: category.name,
+    description: category.description,
+    products: category.products.map((product: MenuProductRecord): MenuProduct => ({
+      id: product.id,
+      name: product.name,
+      description: product.description,
+      imageUrl: product.imageUrl,
+      basePrice: Number(product.basePrice),
+      available: product.available,
+      categoryName: category.name,
+      sizes: product.sizes.map((size: MenuProductSizeRecord): MenuProductSize => ({
+        id: size.id,
+        name: size.name,
+        priceModifier: Number(size.priceModifier),
+      })),
+      sauces: product.optionLinks
+        .filter((link: MenuProductOptionLinkRecord) => link.sauce?.active)
+        .map((link: MenuProductOptionLinkRecord): MenuProductOption => ({
+          id: link.sauce!.id,
+          name: link.sauce!.name,
+          price: Number(link.sauce!.price),
+        })),
+      extras: product.optionLinks
+        .filter((link: MenuProductOptionLinkRecord) => link.extra?.active)
+        .map((link: MenuProductOptionLinkRecord): MenuProductOption => ({
+          id: link.extra!.id,
+          name: link.extra!.name,
+          price: Number(link.extra!.price),
+        })),
+      drinks: product.optionLinks
+        .filter((link: MenuProductOptionLinkRecord) => link.drink?.active)
+        .map((link: MenuProductOptionLinkRecord): MenuProductOption => ({
+          id: link.drink!.id,
+          name: link.drink!.name,
+          price: Number(link.drink!.price),
+        })),
+    })),
+  }));
 
   const heroImage = heroEntry
     ? getProductImageSrc(heroEntry.name, heroEntry.imageUrl, heroEntry.categoryName)
@@ -108,46 +173,7 @@ export default async function MenuPage({
           </section>
 
           <MenuClient
-            categories={categories.map((category) => ({
-              id: category.id,
-              name: category.name,
-              description: category.description,
-              products: category.products.map((product) => ({
-                id: product.id,
-                name: product.name,
-                description: product.description,
-                imageUrl: product.imageUrl,
-                basePrice: Number(product.basePrice),
-                available: product.available,
-                categoryName: category.name,
-                sizes: product.sizes.map((size) => ({
-                  id: size.id,
-                  name: size.name,
-                  priceModifier: Number(size.priceModifier),
-                })),
-                sauces: product.optionLinks
-                  .filter((link) => link.sauce?.active)
-                  .map((link) => ({
-                    id: link.sauce!.id,
-                    name: link.sauce!.name,
-                    price: Number(link.sauce!.price),
-                  })),
-                extras: product.optionLinks
-                  .filter((link) => link.extra?.active)
-                  .map((link) => ({
-                    id: link.extra!.id,
-                    name: link.extra!.name,
-                    price: Number(link.extra!.price),
-                  })),
-                drinks: product.optionLinks
-                  .filter((link) => link.drink?.active)
-                  .map((link) => ({
-                    id: link.drink!.id,
-                    name: link.drink!.name,
-                    price: Number(link.drink!.price),
-                  })),
-              })),
-            }))}
+            categories={menuCategories}
           />
         </div>
       </main>

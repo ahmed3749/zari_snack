@@ -4,27 +4,32 @@ import PublicHeader from "../components/PublicHeader";
 import { getProductImageSrc } from "@/lib/product-image";
 import { getPublicMenuCategories, getRestaurantSettings } from "@/lib/restaurant-data";
 
+type PublicCategories = Awaited<ReturnType<typeof getPublicMenuCategories>>;
+type PublicCategory = PublicCategories[number];
+type PublicProduct = PublicCategory["products"][number];
+type HighlightProduct = PublicProduct & { categoryName: string };
+
 function formatPrice(value: number) {
   return `${value.toFixed(2)} DH`;
 }
 
 export default async function HomePage() {
-  const [settings, categories] = await Promise.all([
+  const [settings, categories]: [Awaited<ReturnType<typeof getRestaurantSettings>>, PublicCategories] = await Promise.all([
     getRestaurantSettings(),
     getPublicMenuCategories(),
   ]);
 
-  const featuredProducts = categories
-    .flatMap((category) =>
-      category.products.map((product) => ({
+  const featuredProducts: HighlightProduct[] = categories
+    .flatMap((category: PublicCategory) =>
+      category.products.map((product: PublicProduct) => ({
         ...product,
         categoryName: category.name,
       }))
     )
     .slice(0, 4);
-  const bestSellers = categories
-    .flatMap((category) =>
-      category.products.map((product) => ({
+  const bestSellers: HighlightProduct[] = categories
+    .flatMap((category: PublicCategory) =>
+      category.products.map((product: PublicProduct) => ({
         ...product,
         categoryName: category.name,
       }))
@@ -108,7 +113,7 @@ export default async function HomePage() {
               ["Ouvert", settings?.openingHours ?? "Service quotidien"],
               ["Appelez-nous", settings?.whatsappNumber ?? "WhatsApp direct"],
               ["Note 4.6/5", "Clients satisfaits"],
-            ].map(([title, text], index) => (
+            ].map(([title, text], index: number) => (
               <div
                 key={title}
                 className={`rounded-2xl px-4 py-3 ${
@@ -155,7 +160,7 @@ export default async function HomePage() {
                   <span className="category-chip bg-[#1a1613] px-5 text-sm font-bold text-white shadow-sm">
                     Tous
                   </span>
-                  {categories.slice(0, 8).map((category) => (
+                  {categories.slice(0, 8).map((category: PublicCategory) => (
                     <span
                       key={category.id}
                       className="category-chip border border-amber-200 bg-white px-5 text-sm font-semibold text-slate-800 shadow-sm"
@@ -168,7 +173,7 @@ export default async function HomePage() {
 
               <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_21rem] 2xl:grid-cols-[minmax(0,1fr)_22rem]">
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                  {featuredProducts.map((product, index) => (
+                  {featuredProducts.map((product: HighlightProduct, index: number) => (
                     <article
                       key={product.id}
                       className="showcase-card rounded-[1.8rem] min-w-0"
@@ -275,7 +280,7 @@ export default async function HomePage() {
                 </div>
 
                 <div className="mt-5 grid gap-3 lg:grid-cols-3">
-                  {bestSellers.map((product, index) => (
+                  {bestSellers.map((product: HighlightProduct, index: number) => (
                     <div
                       key={product.id}
                       className="flex items-center gap-4 rounded-[1.6rem] border border-white/10 bg-white/6 px-4 py-4"

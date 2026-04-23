@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import type { CartItem, MenuProduct } from "@/components/menu/types";
+import type { CartItem, MenuProduct, MenuProductOption, MenuProductSize } from "@/components/menu/types";
 import { detectProductImageKind, getProductImageSrc } from "@/lib/product-image";
 
 function formatPrice(value: number) {
@@ -61,19 +61,19 @@ export default function ProductConfigurator({
   const rules = getProductRules(kind, product);
   const imageSrc = getProductImageSrc(product.name, product.imageUrl, product.categoryName);
 
-  const selectedSize = product.sizes.find((size) => size.id === selectedSizeId) ?? null;
-  const selectedSauces = product.sauces.filter((option) =>
+  const selectedSize = product.sizes.find((size: MenuProductSize) => size.id === selectedSizeId) ?? null;
+  const selectedSauces = product.sauces.filter((option: MenuProductOption) =>
     selectedSauceIds.includes(option.id)
   );
-  const selectedExtras = product.extras.filter((option) =>
+  const selectedExtras = product.extras.filter((option: MenuProductOption) =>
     selectedExtraIds.includes(option.id)
   );
-  const selectedDrink = product.drinks.find((option) => option.id === selectedDrinkId) ?? null;
+  const selectedDrink = product.drinks.find((option: MenuProductOption) => option.id === selectedDrinkId) ?? null;
 
   const unitPrice = useMemo(() => {
     const sizePrice = selectedSize?.priceModifier ?? 0;
-    const saucesPrice = selectedSauces.reduce((sum, option) => sum + option.price, 0);
-    const extrasPrice = selectedExtras.reduce((sum, option) => sum + option.price, 0);
+    const saucesPrice = selectedSauces.reduce((sum: number, option: MenuProductOption) => sum + option.price, 0);
+    const extrasPrice = selectedExtras.reduce((sum: number, option: MenuProductOption) => sum + option.price, 0);
     const drinkPrice = selectedDrink?.price ?? 0;
 
     return product.basePrice + sizePrice + saucesPrice + extrasPrice + drinkPrice;
@@ -87,7 +87,7 @@ export default function ProductConfigurator({
     setSelectedIds: (ids: string[]) => void
   ) {
     if (selectedIds.includes(id)) {
-      setSelectedIds(selectedIds.filter((selectedId) => selectedId !== id));
+      setSelectedIds(selectedIds.filter((selectedId: string) => selectedId !== id));
       return;
     }
 
@@ -222,7 +222,7 @@ export default function ProductConfigurator({
                     Taille
                   </h3>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {product.sizes.map((size) => (
+                    {product.sizes.map((size: MenuProductSize) => (
                       <label
                         key={size.id}
                         className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-3 ${
@@ -256,7 +256,7 @@ export default function ProductConfigurator({
                     Sauces
                   </h3>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {product.sauces.map((option) => (
+                    {product.sauces.map((option: MenuProductOption) => (
                       <label
                         key={option.id}
                         className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-3 ${
@@ -289,7 +289,7 @@ export default function ProductConfigurator({
                     Extras
                   </h3>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {product.extras.map((option) => (
+                    {product.extras.map((option: MenuProductOption) => (
                       <label
                         key={option.id}
                         className={`flex cursor-pointer items-center justify-between rounded-2xl border px-4 py-3 ${
@@ -322,7 +322,7 @@ export default function ProductConfigurator({
                     Boisson
                   </h3>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    {product.drinks.map((option) => (
+                    {product.drinks.map((option: MenuProductOption) => (
                       <button
                         type="button"
                         key={option.id}
