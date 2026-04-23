@@ -33,10 +33,15 @@ type OptionRecord = {
 };
 
 type AdminCatalogData = Awaited<ReturnType<typeof getAdminCatalogData>>;
-type CategoryRecord = AdminCatalogData["categories"][number];
-type ProductRecord = CategoryRecord["products"][number];
-type ProductSizeRecord = ProductRecord["sizes"][number];
-type ProductOptionLinkRecord = ProductRecord["optionLinks"][number];
+type ProductSize = AdminCatalogData["categories"][number]["products"][number]["sizes"][number];
+type ProductOptionLink = AdminCatalogData["categories"][number]["products"][number]["optionLinks"][number];
+type Product = Omit<AdminCatalogData["categories"][number]["products"][number], "sizes" | "optionLinks"> & {
+  sizes: ProductSize[];
+  optionLinks: ProductOptionLink[];
+};
+type Category = Omit<AdminCatalogData["categories"][number], "products"> & {
+  products: Product[];
+};
 type ViewMode = "overview" | "add-category" | "add-product" | "categories" | "products" | "options";
 
 const SIZE_OPTIONS = [
@@ -52,25 +57,25 @@ function ProductFormFields({
   drinks,
   product,
 }: {
-  categories: CategoryRecord[];
+  categories: Category[];
   sauces: OptionRecord[];
   extras: OptionRecord[];
   drinks: OptionRecord[];
-  product?: ProductRecord;
+  product?: Product;
 }) {
   const selectedSauceIds = new Set(
-    product?.optionLinks.flatMap((link: ProductOptionLinkRecord) => (link.sauce ? [link.sauce.id] : [])) ?? []
+    product?.optionLinks.flatMap((link: ProductOptionLink) => (link.sauce ? [link.sauce.id] : [])) ?? []
   );
   const selectedExtraIds = new Set(
-    product?.optionLinks.flatMap((link: ProductOptionLinkRecord) => (link.extra ? [link.extra.id] : [])) ?? []
+    product?.optionLinks.flatMap((link: ProductOptionLink) => (link.extra ? [link.extra.id] : [])) ?? []
   );
   const selectedDrinkIds = new Set(
-    product?.optionLinks.flatMap((link: ProductOptionLinkRecord) => (link.drink ? [link.drink.id] : [])) ?? []
+    product?.optionLinks.flatMap((link: ProductOptionLink) => (link.drink ? [link.drink.id] : [])) ?? []
   );
   const basePrice = product ? Number(product.basePrice) : 0;
-  const productSizes: ProductSizeRecord[] = product?.sizes ?? [];
+  const productSizes: ProductSize[] = product?.sizes ?? [];
   const sizeMap = new Map<string, number>(
-    productSizes.map((size: ProductSizeRecord) => [
+    productSizes.map((size: ProductSize) => [
       size.name.toLowerCase(),
       basePrice + Number(size.priceModifier),
     ])
@@ -97,7 +102,7 @@ function ProductFormFields({
             className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 text-slate-100"
             required
           >
-            {categories.map((category) => (
+            {categories.map((category: Category) => (
               <option key={category.id} value={category.id}>
                 {category.name}
               </option>
@@ -367,7 +372,7 @@ function QuickLink({
   );
 }
 
-function CategoryEditor({ category }: { category: CategoryRecord }) {
+function CategoryEditor({ category }: { category: Category }) {
   return (
     <article className="rounded-3xl bg-slate-900/90 p-6 text-slate-100 shadow-sm">
       <div className="flex flex-col gap-6 lg:flex-row">
@@ -424,7 +429,7 @@ function CategoryEditor({ category }: { category: CategoryRecord }) {
             {category.products.length === 0 ? (
               <p className="text-sm text-slate-400">Aucun produit dans cette catégorie.</p>
             ) : (
-              category.products.map((product) => (
+              category.products.map((product: Product) => (
                 <div
                   key={product.id}
                   className="flex items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/60 p-3"
@@ -456,8 +461,8 @@ function ProductEditor({
   extras,
   drinks,
 }: {
-  product: ProductRecord;
-  categories: CategoryRecord[];
+  product: Product;
+  categories: Category[];
   sauces: OptionRecord[];
   extras: OptionRecord[];
   drinks: OptionRecord[];
@@ -518,16 +523,17 @@ export default async function AdminMenuPage({
   await requireAdminSession();
   const params = (await searchParams) ?? {};
   const view = (params.view as ViewMode | undefined) ?? "overview";
-  const { categories, sauces, extras, drinks } = await getAdminCatalogData();
+  const { categories: rawCategories, sauces, extras, drinks } = await getAdminCatalogData();
+  const categories: Category[] = rawCategories;
 
   const normalizedSauces = sauces.map((option) => ({ ...option, price: Number(option.price) }));
   const normalizedExtras = extras.map((option) => ({ ...option, price: Number(option.price) }));
   const normalizedDrinks = drinks.map((option) => ({ ...option, price: Number(option.price) }));
-  const allProducts = categories.flatMap((category) => category.products);
+  const allProducts: Product[] = categories.flatMap((category: Category) => category.products);
   const selectedCategory =
-    categories.find((category) => category.id === params.categoryId) ?? categories[0] ?? null;
+    categories.find((category: Category) => category.id === params.categoryId) ?? categories[0] ?? null;
   const selectedProduct =
-    allProducts.find((product) => product.id === params.productId) ?? allProducts[0] ?? null;
+    allProducts.find((product: Product) => product.id === params.productId) ?? allProducts[0] ?? null;
 
   return (
     <div className="space-y-6">
@@ -594,7 +600,7 @@ export default async function AdminMenuPage({
                   defaultValue={selectedCategory?.id ?? ""}
                   className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 text-slate-100"
                 >
-                  {categories.map((category) => (
+                  {categories.map((category: Category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
@@ -617,9 +623,9 @@ export default async function AdminMenuPage({
                   defaultValue={selectedProduct?.id ?? ""}
                   className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 text-slate-100"
                 >
-                  {categories.map((category) => (
+                  {categories.map((category: Category) => (
                     <optgroup key={category.id} label={category.name}>
-                      {category.products.map((product) => (
+                      {category.products.map((product: Product) => (
                         <option key={product.id} value={product.id}>
                           {product.name}
                         </option>
