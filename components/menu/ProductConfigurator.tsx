@@ -138,6 +138,7 @@ export default function ProductConfigurator({
       <article className="warm-card overflow-hidden rounded-[1.7rem]">
         <div className="relative h-44 w-full bg-[linear-gradient(135deg,_#1b130a,_#3b260c)] sm:h-48">
           {/* A plain img keeps admin-uploaded and arbitrary product URLs from breaking hydration. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageSrc}
             alt={product.name}

@@ -1,9 +1,9 @@
 "use server";
 
-import { OrderStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 import { requireAdminSession } from "@/lib/admin-auth";
+import { ORDER_STATUSES, type OrderStatus } from "@/lib/order-status";
 import { prisma } from "@/lib/prisma";
 
 export async function updateOrderStatus(formData: FormData) {
@@ -12,7 +12,7 @@ export async function updateOrderStatus(formData: FormData) {
   const id = String(formData.get("id") ?? "").trim();
   const status = String(formData.get("status") ?? "").trim() as OrderStatus;
 
-  if (!id || !Object.values(OrderStatus).includes(status)) {
+  if (!id || !ORDER_STATUSES.includes(status)) {
     return;
   }
 

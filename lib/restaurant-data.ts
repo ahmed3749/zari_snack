@@ -1,7 +1,6 @@
 import "server-only";
 
-import { OrderStatus } from "@prisma/client";
-
+import { OrderStatus } from "@/lib/order-status";
 import { getShortOrderReference } from "@/lib/order-reference";
 import { prisma } from "@/lib/prisma";
 

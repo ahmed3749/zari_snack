@@ -1,18 +1,17 @@
-import { OrderStatus } from "@prisma/client";
-
 import SectionHeading from "../../../components/SectionHeading";
 
 import { deleteSelectedOrders, updateOrderStatus } from "./actions";
 
 import { requireAdminSession } from "@/lib/admin-auth";
 import { getShortOrderReference } from "@/lib/order-reference";
+import { ORDER_STATUSES, OrderStatus, type OrderStatus as OrderStatusValue } from "@/lib/order-status";
 import { getOrdersList, getRestaurantSettings } from "@/lib/restaurant-data";
 
 function formatPrice(value: number) {
   return `${value.toFixed(2)} DH`;
 }
 
-function getStatusMeta(status: OrderStatus) {
+function getStatusMeta(status: OrderStatusValue) {
   switch (status) {
     case OrderStatus.NOUVELLE:
       return {
@@ -133,7 +132,7 @@ export default async function AdminOrdersPage() {
                         defaultValue={order.status}
                         className="rounded-full border border-slate-700 bg-slate-950 px-4 py-2 text-sm text-slate-100"
                       >
-                        {Object.values(OrderStatus).map((status) => (
+                        {ORDER_STATUSES.map((status: OrderStatusValue) => (
                           <option key={status} value={status}>
                             {status}
                           </option>
