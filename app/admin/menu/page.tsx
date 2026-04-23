@@ -33,6 +33,7 @@ type OptionRecord = {
 };
 
 type AdminCatalogData = Awaited<ReturnType<typeof getAdminCatalogData>>;
+type CatalogOption = AdminCatalogData["sauces"][number];
 type ProductSize = AdminCatalogData["categories"][number]["products"][number]["sizes"][number];
 type ProductOptionLink = AdminCatalogData["categories"][number]["products"][number]["optionLinks"][number];
 type Product = Omit<AdminCatalogData["categories"][number]["products"][number], "sizes" | "optionLinks"> & {
@@ -145,7 +146,7 @@ function ProductFormFields({
       <div className="space-y-3">
         <span className="text-sm text-slate-300">Tailles</span>
         <div className="grid gap-3 md:grid-cols-3">
-          {SIZE_OPTIONS.map((size) => {
+          {SIZE_OPTIONS.map((size: (typeof SIZE_OPTIONS)[number]) => {
             const exactPrice = sizeMap.get(size.label.toLowerCase());
             const isEnabled = exactPrice !== undefined;
 
@@ -188,7 +189,7 @@ function ProductFormFields({
         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
           <p className="text-sm font-semibold text-slate-100">Sauces</p>
           <div className="mt-3 space-y-2 text-sm">
-            {sauces.map((option) => (
+            {sauces.map((option: OptionRecord) => (
               <label key={option.id} className="flex items-center gap-2 text-slate-300">
                 <input
                   type="checkbox"
@@ -204,7 +205,7 @@ function ProductFormFields({
         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
           <p className="text-sm font-semibold text-slate-100">Extras</p>
           <div className="mt-3 space-y-2 text-sm">
-            {extras.map((option) => (
+            {extras.map((option: OptionRecord) => (
               <label key={option.id} className="flex items-center gap-2 text-slate-300">
                 <input
                   type="checkbox"
@@ -220,7 +221,7 @@ function ProductFormFields({
         <div className="rounded-2xl border border-slate-800 bg-slate-950/60 p-4">
           <p className="text-sm font-semibold text-slate-100">Boissons</p>
           <div className="mt-3 space-y-2 text-sm">
-            {drinks.map((option) => (
+            {drinks.map((option: OptionRecord) => (
               <label key={option.id} className="flex items-center gap-2 text-slate-300">
                 <input
                   type="checkbox"
@@ -300,7 +301,7 @@ function OptionSection({
       </form>
 
       <div className="mt-5 space-y-3">
-        {options.map((option) => (
+        {options.map((option: OptionRecord) => (
           <div key={option.id} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-4">
             <form
               action={updateCatalogOption}
@@ -526,9 +527,18 @@ export default async function AdminMenuPage({
   const { categories: rawCategories, sauces, extras, drinks } = await getAdminCatalogData();
   const categories: Category[] = rawCategories;
 
-  const normalizedSauces = sauces.map((option) => ({ ...option, price: Number(option.price) }));
-  const normalizedExtras = extras.map((option) => ({ ...option, price: Number(option.price) }));
-  const normalizedDrinks = drinks.map((option) => ({ ...option, price: Number(option.price) }));
+  const normalizedSauces: OptionRecord[] = sauces.map((option: CatalogOption) => ({
+    ...option,
+    price: Number(option.price),
+  }));
+  const normalizedExtras: OptionRecord[] = extras.map((option: CatalogOption) => ({
+    ...option,
+    price: Number(option.price),
+  }));
+  const normalizedDrinks: OptionRecord[] = drinks.map((option: CatalogOption) => ({
+    ...option,
+    price: Number(option.price),
+  }));
   const allProducts: Product[] = categories.flatMap((category: Category) => category.products);
   const selectedCategory =
     categories.find((category: Category) => category.id === params.categoryId) ?? categories[0] ?? null;
