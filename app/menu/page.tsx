@@ -2,31 +2,48 @@ import PublicFooter from "../../components/PublicFooter";
 import PublicHeader from "../../components/PublicHeader";
 import MenuClient from "../../components/menu/MenuClient";
 import type { MenuCategory, MenuProduct, MenuProductOption, MenuProductSize } from "../../components/menu/types";
-import type { Prisma } from "@prisma/client";
 
 import { getProductImageSrc } from "@/lib/product-image";
 import { prisma } from "@/lib/prisma";
 
-type MenuCategoryRecord = Prisma.CategoryGetPayload<{
-  include: {
-    products: {
-      include: {
-        sizes: true;
-        optionLinks: {
-          include: {
-            sauce: true;
-            extra: true;
-            drink: true;
-          };
-        };
-      };
-    };
-  };
-}>;
+type MenuProductSizeRecord = {
+  id: string;
+  name: string;
+  priceModifier: unknown;
+};
+
+type MenuProductOptionRecord = {
+  id: string;
+  name: string;
+  price: unknown;
+  active: boolean;
+};
+
+type MenuProductOptionLinkRecord = {
+  sauce: MenuProductOptionRecord | null;
+  extra: MenuProductOptionRecord | null;
+  drink: MenuProductOptionRecord | null;
+};
+
+type MenuProductRecord = {
+  id: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  basePrice: unknown;
+  available: boolean;
+  sizes: MenuProductSizeRecord[];
+  optionLinks: MenuProductOptionLinkRecord[];
+};
+
+type MenuCategoryRecord = {
+  id: string;
+  name: string;
+  description: string | null;
+  products: MenuProductRecord[];
+};
+
 type MenuCategories = MenuCategoryRecord[];
-type MenuProductRecord = MenuCategoryRecord["products"][number];
-type MenuProductSizeRecord = MenuProductRecord["sizes"][number];
-type MenuProductOptionLinkRecord = MenuProductRecord["optionLinks"][number];
 type HeroEntry = MenuProductRecord & { categoryName: string };
 
 export default async function MenuPage({

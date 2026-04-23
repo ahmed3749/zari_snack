@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { Drink, Extra, Product, ProductOptionLink, ProductSize, Sauce } from "@prisma/client";
 
 import { getShortOrderReference } from "@/lib/order-reference";
 import { prisma } from "@/lib/prisma";
@@ -22,15 +21,31 @@ type ParsedIncomingItem = {
   selectedDrinkId: string | null;
 };
 
-type ProductWithOptions = Product & {
-  sizes: ProductSize[];
-  optionLinks: Array<
-    ProductOptionLink & {
-      sauce: Sauce | null;
-      extra: Extra | null;
-      drink: Drink | null;
-    }
-  >;
+type ProductSizeRecord = {
+  id: string;
+  name: string;
+  priceModifier: unknown;
+};
+
+type CatalogOptionRecord = {
+  id: string;
+  name: string;
+  price: unknown;
+  active: boolean;
+};
+
+type ProductOptionLinkRecord = {
+  sauce: CatalogOptionRecord | null;
+  extra: CatalogOptionRecord | null;
+  drink: CatalogOptionRecord | null;
+};
+
+type ProductWithOptions = {
+  id: string;
+  name: string;
+  basePrice: unknown;
+  sizes: ProductSizeRecord[];
+  optionLinks: ProductOptionLinkRecord[];
 };
 
 function formatPrice(value: number) {
@@ -192,7 +207,7 @@ export async function POST(request: NextRequest) {
       }
 
       const selectedSize = item.selectedSizeId
-        ? product.sizes.find((size: ProductSize) => size.id === item.selectedSizeId) ?? null
+        ? product.sizes.find((size: ProductSizeRecord) => size.id === item.selectedSizeId) ?? null
         : null;
 
       if (item.selectedSizeId && !selectedSize) {
@@ -200,16 +215,16 @@ export async function POST(request: NextRequest) {
       }
 
       const sauces = product.optionLinks
-        .filter((link: ProductWithOptions["optionLinks"][number]) => link.sauce && link.sauce.active && item.selectedSauceIds.includes(link.sauce.id))
-        .map((link: ProductWithOptions["optionLinks"][number]) => link.sauce!);
+        .filter((link: ProductOptionLinkRecord) => link.sauce && link.sauce.active && item.selectedSauceIds.includes(link.sauce.id))
+        .map((link: ProductOptionLinkRecord) => link.sauce!);
 
       if (sauces.length !== item.selectedSauceIds.length) {
         throw new Error(`Une sauce sélectionnée pour ${product.name} est invalide.`);
       }
 
       const extras = product.optionLinks
-        .filter((link: ProductWithOptions["optionLinks"][number]) => link.extra && link.extra.active && item.selectedExtraIds.includes(link.extra.id))
-        .map((link: ProductWithOptions["optionLinks"][number]) => link.extra!);
+        .filter((link: ProductOptionLinkRecord) => link.extra && link.extra.active && item.selectedExtraIds.includes(link.extra.id))
+        .map((link: ProductOptionLinkRecord) => link.extra!);
 
       if (extras.length !== item.selectedExtraIds.length) {
         throw new Error(`Un extra sélectionné pour ${product.name} est invalide.`);
@@ -217,7 +232,7 @@ export async function POST(request: NextRequest) {
 
       const drink = item.selectedDrinkId
         ? product.optionLinks.find(
-            (link: ProductWithOptions["optionLinks"][number]) => link.drink && link.drink.active && link.drink.id === item.selectedDrinkId
+            (link: ProductOptionLinkRecord) => link.drink && link.drink.active && link.drink.id === item.selectedDrinkId
           )?.drink ?? null
         : null;
 
@@ -228,8 +243,8 @@ export async function POST(request: NextRequest) {
       const unitPrice =
         Number(product.basePrice) +
         Number(selectedSize?.priceModifier ?? 0) +
-        sauces.reduce((sum: number, option: Sauce) => sum + Number(option.price), 0) +
-        extras.reduce((sum: number, option: Extra) => sum + Number(option.price), 0) +
+        sauces.reduce((sum: number, option: CatalogOptionRecord) => sum + Number(option.price), 0) +
+        extras.reduce((sum: number, option: CatalogOptionRecord) => sum + Number(option.price), 0) +
         Number(drink?.price ?? 0);
 
       const subtotal = unitPrice * item.quantity;
@@ -288,12 +303,12 @@ export async function POST(request: NextRequest) {
               ? Number(item.selectedSize.priceModifier)
               : null,
             options: {
-              sauces: item.sauces.map((option: Sauce) => ({
+              sauces: item.sauces.map((option: CatalogOptionRecord) => ({
                 id: option.id,
                 name: option.name,
                 price: Number(option.price),
               })),
-              extras: item.extras.map((option: Extra) => ({
+              extras: item.extras.map((option: CatalogOptionRecord) => ({
                 id: option.id,
                 name: option.name,
                 price: Number(option.price),
@@ -326,8 +341,8 @@ export async function POST(request: NextRequest) {
         quantity: item.quantity,
         subtotal: item.subtotal,
         selectedSizeName: item.selectedSize?.name ?? null,
-        sauces: item.sauces.map((option: Sauce) => option.name),
-        extras: item.extras.map((option: Extra) => option.name),
+        sauces: item.sauces.map((option: CatalogOptionRecord) => option.name),
+        extras: item.extras.map((option: CatalogOptionRecord) => option.name),
         drink: item.drink?.name ?? null,
       })),
       total,
