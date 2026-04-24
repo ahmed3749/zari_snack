@@ -136,18 +136,20 @@ export default function ProductConfigurator({
   return (
     <>
       <article className="warm-card overflow-hidden rounded-[1.7rem]">
-        <div className="relative h-44 w-full bg-[linear-gradient(135deg,_#1b130a,_#3b260c)] sm:h-48">
+        <div className="relative aspect-[4/3] w-full bg-[linear-gradient(135deg,_#1b130a,_#3b260c)] sm:h-48 sm:aspect-auto">
           {/* A plain img keeps admin-uploaded and arbitrary product URLs from breaking hydration. */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageSrc}
             alt={product.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-center"
+            loading="lazy"
+            decoding="async"
           />
         </div>
 
         <div className="space-y-3 p-4 sm:p-5">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">
               {product.categoryName}
             </span>
@@ -162,14 +164,14 @@ export default function ProductConfigurator({
             </span>
           </div>
 
-          <div className="flex items-start justify-between gap-4">
-            <div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+            <div className="min-w-0">
               <h3 className="text-lg font-semibold text-slate-950 sm:text-xl">{product.name}</h3>
               <p className="mt-1.5 text-sm leading-5 text-slate-600">
                 {product.description ?? "Description à venir."}
               </p>
             </div>
-            <p className="whitespace-nowrap rounded-full bg-slate-950 px-3 py-1 text-sm font-bold text-amber-300">
+            <p className="w-fit whitespace-nowrap rounded-full bg-slate-950 px-3 py-1 text-sm font-bold text-amber-300">
               {formatPrice(product.basePrice)}
             </p>
           </div>
@@ -192,10 +194,10 @@ export default function ProductConfigurator({
 
       <div
         id={`product-config-${product.id}`}
-        className="product-modal mt-4 scroll-mt-28"
+        className="product-modal mt-4 scroll-mt-24 md:scroll-mt-28"
       >
-          <div className="w-full rounded-[2rem] bg-[linear-gradient(180deg,_#ffffff,_#f8fafc)] p-6 shadow-2xl ring-1 ring-slate-200">
-            <div className="flex items-start justify-between gap-4">
+          <div className="w-full rounded-[2rem] bg-[linear-gradient(180deg,_#ffffff,_#f8fafc)] p-4 shadow-2xl ring-1 ring-slate-200 sm:p-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-amber-700">
                   Fiche produit

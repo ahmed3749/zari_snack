@@ -105,33 +105,33 @@ export default async function MenuPage() {
   return (
     <div className="min-h-screen text-slate-900">
       <PublicHeader />
-      <main className="px-3 py-5 md:px-5 md:py-7">
+      <main className="px-3 pb-5 pt-3 md:px-5 md:py-7">
         <div className="page-frame space-y-7 md:space-y-9">
           <section className="overflow-hidden rounded-[2rem] border-[3px] border-[#1a1613] bg-[#111] shadow-[0_28px_58px_rgba(33,21,12,0.22)]">
             <div className="grid min-h-[300px] lg:min-h-[360px] lg:grid-cols-[1.02fr_0.98fr]">
-              <div className="hero-panel grid-pattern flex items-center px-6 py-8 text-white md:px-10 md:py-11">
+              <div className="hero-panel grid-pattern flex items-center px-5 py-6 text-white md:px-10 md:py-11">
                 <div className="max-w-2xl">
                   <span className="inline-flex rounded-full bg-[linear-gradient(135deg,_#ffcd3c,_#ffb703)] px-4 py-1 text-xs font-black uppercase tracking-[0.26em] text-slate-950">
                     Carte du moment
                   </span>
-                  <h1 className="section-title mt-4 text-6xl leading-[0.88] text-white md:text-8xl xl:text-[5.8rem]">
+                  <h1 className="section-title mt-4 text-[3.2rem] leading-[0.88] text-white md:text-8xl xl:text-[5.8rem]">
                     Découvrez
                     <span className="block text-[#ffbf1f]">notre menu</span>
                   </h1>
-                  <p className="mt-4 max-w-xl text-sm leading-7 text-white/82 md:text-base">
+                  <p className="mt-4 max-w-xl text-sm leading-6 text-white/82 md:text-base md:leading-7">
                     Une carte pensée comme une vraie vitrine food: catégories visibles, produits
                     gourmands, personnalisation rapide et panier toujours accessible.
                   </p>
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="mt-6 grid gap-3 sm:flex sm:flex-wrap">
                     <a
                       href="#menu-root"
-                      className="rounded-full bg-[linear-gradient(135deg,_#ff3b30,_#d91f1f)] px-5 py-3 text-sm font-bold text-white shadow-[0_18px_34px_rgba(127,29,29,0.3)]"
+                      className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,_#ff3b30,_#d91f1f)] px-5 py-3 text-sm font-bold text-white shadow-[0_18px_34px_rgba(127,29,29,0.3)]"
                     >
                       Voir les plats
                     </a>
                     <a
                       href="/contact"
-                      className="rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm"
+                      className="inline-flex items-center justify-center rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur-sm"
                     >
                       Nous contacter
                     </a>
@@ -145,7 +145,7 @@ export default async function MenuPage() {
                 <img
                   src={heroImage}
                   alt="Aperçu du menu"
-                  className="h-full w-full scale-[1.03] object-cover opacity-92"
+                  className="h-full w-full object-cover object-center opacity-92 md:scale-[1.03]"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,_rgba(17,17,17,0.12),_rgba(17,17,17,0.4))]" />
               </div>

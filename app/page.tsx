@@ -43,31 +43,31 @@ export default async function HomePage() {
   return (
     <div className="flex min-h-screen flex-col text-slate-900">
       <PublicHeader />
-      <main className="flex-1 px-3 py-5 md:px-5 md:py-7">
+      <main className="flex-1 px-3 pb-5 pt-3 md:px-5 md:py-7">
         <div className="page-frame space-y-7 md:space-y-9">
           <section className="overflow-hidden rounded-[2rem] border-[3px] border-[#1a1613] bg-[#111] shadow-[0_28px_58px_rgba(33,21,12,0.22)]">
             <div className="grid lg:grid-cols-[1.05fr_0.95fr]">
-              <div className="grid-pattern hero-panel px-6 py-8 text-white md:px-10 md:py-11">
+              <div className="grid-pattern hero-panel px-5 py-6 text-white md:px-10 md:py-11">
                 <div className="max-w-2xl">
                   <span className="inline-flex rounded-full bg-[linear-gradient(135deg,_#ffcd3c,_#ffb703)] px-4 py-1 text-xs font-black uppercase tracking-[0.26em] text-slate-950">
                     Bienvenue chez
                   </span>
-                  <h1 className="section-title mt-4 text-6xl leading-[0.88] text-white md:text-8xl xl:text-[6.2rem]">
+                  <h1 className="section-title mt-4 text-[3.2rem] leading-[0.88] text-white md:text-8xl xl:text-[6.2rem]">
                     TACOS
                     <span className="block text-[#ffbf1f]">YASSINOS</span>
                   </h1>
-                  <p className="mt-3 text-base font-semibold text-white md:text-lg">
+                  <p className="mt-3 text-sm font-semibold text-white md:text-lg">
                     Les meilleurs tacos de Salé
                   </p>
-                  <p className="mt-4 max-w-xl text-sm leading-7 text-white/78 md:text-base">
+                  <p className="mt-4 max-w-xl text-sm leading-6 text-white/78 md:text-base md:leading-7">
                     {settings?.welcomeMessage ??
                       "Un univers street-food généreux, un design impactant et une commande rapide en quelques clics."}
                   </p>
 
-                  <div className="mt-5 flex flex-wrap gap-2.5 text-sm">
+                  <div className="mt-5 grid gap-2.5 text-sm sm:flex sm:flex-wrap">
                     <a
                       href="/menu"
-                      className="rounded-full bg-[linear-gradient(135deg,_#ff3b30,_#d91f1f)] px-5 py-3 font-bold text-white shadow-[0_18px_34px_rgba(127,29,29,0.3)]"
+                      className="inline-flex items-center justify-center rounded-full bg-[linear-gradient(135deg,_#ff3b30,_#d91f1f)] px-5 py-3 font-bold text-white shadow-[0_18px_34px_rgba(127,29,29,0.3)]"
                     >
                       Commander maintenant
                     </a>
@@ -76,7 +76,7 @@ export default async function HomePage() {
                         href={whatsappLink}
                         target="_blank"
                         rel="noreferrer"
-                        className="rounded-full border border-white/22 bg-white/10 px-5 py-3 font-semibold text-white backdrop-blur-sm"
+                        className="inline-flex items-center justify-center rounded-full border border-white/22 bg-white/10 px-5 py-3 font-semibold text-white backdrop-blur-sm"
                       >
                         Commander sur WhatsApp
                       </a>
@@ -91,13 +91,13 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="relative min-h-[320px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(255,191,31,0.24),_transparent_28%),linear-gradient(135deg,_#2b1b11,_#0d0908)] md:min-h-[440px]">
+              <div className="relative min-h-[250px] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(255,191,31,0.24),_transparent_28%),linear-gradient(135deg,_#2b1b11,_#0d0908)] md:min-h-[440px]">
                 <div className="hero-glow" />
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={heroImage}
                   alt="Produit vedette"
-                  className="h-full w-full scale-[1.04] object-cover opacity-92"
+                  className="h-full w-full object-cover object-center opacity-92 md:scale-[1.04]"
                 />
                 <div className="absolute inset-0 bg-[linear-gradient(90deg,_rgba(17,17,17,0.08),_rgba(17,17,17,0.5))]" />
               </div>
@@ -168,19 +168,19 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_21rem] 2xl:grid-cols-[minmax(0,1fr)_22rem]">
+              <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_21rem] 2xl:grid-cols-[minmax(0,1fr)_22rem]">
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                   {featuredProducts.map((product: HighlightProduct, index: number) => (
                     <article
                       key={product.id}
                       className="showcase-card rounded-[1.8rem] min-w-0"
                     >
-                      <div className="relative h-48 bg-[linear-gradient(135deg,_#26140b,_#6b3212)] sm:h-52">
+                      <div className="relative aspect-[4/3] bg-[linear-gradient(135deg,_#26140b,_#6b3212)] sm:h-52 sm:aspect-auto">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={getProductImageSrc(product.name, product.imageUrl, product.categoryName)}
                           alt={product.name}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-cover object-center"
                         />
                         <div className="absolute inset-0 bg-[linear-gradient(180deg,_rgba(19,10,6,0.02),_rgba(19,10,6,0.42))]" />
                         <div className="absolute left-3 top-3 flex gap-2">

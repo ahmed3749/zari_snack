@@ -21,13 +21,13 @@ export default function MenuClient({ categories }: MenuClientProps) {
 
   return (
     <>
-      <div className="brand-shell rounded-[2rem] p-5 md:p-6">
+      <div className="brand-shell rounded-[2rem] p-4 md:p-6">
         <div className="relative z-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm font-semibold uppercase tracking-[0.3em] text-amber-700">
               Sélection du jour
             </p>
-            <h2 className="mt-2.5 text-3xl font-semibold text-slate-900 md:text-4xl">
+            <h2 className="mt-2.5 text-2xl font-semibold text-slate-900 md:text-4xl">
               Filtrez par catégorie ou affichez tout le menu d&apos;un seul coup.
             </h2>
             <p className="mt-2.5 text-sm leading-6 text-slate-600 md:text-base">
@@ -37,7 +37,7 @@ export default function MenuClient({ categories }: MenuClientProps) {
           </div>
 
           <div className="flex w-full max-w-xl flex-col gap-3">
-            <div className="flex flex-wrap gap-2">
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 sm:flex-wrap sm:overflow-visible sm:px-0">
               {[{ id: ALL_CATEGORIES_ID, name: "Tous" }, ...categories].map((category: { id: string; name: string }) => {
                 const isActive = category.id === selectedCategoryId;
 
@@ -46,7 +46,7 @@ export default function MenuClient({ categories }: MenuClientProps) {
                     key={category.id}
                     type="button"
                     onClick={() => setSelectedCategoryId(category.id)}
-                    className={`rounded-full px-4 py-2 text-sm font-medium shadow-sm transition ${
+                    className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium shadow-sm transition ${
                       isActive
                         ? "bg-[#1a1613] text-white"
                         : "border border-amber-200 bg-white text-amber-800"
