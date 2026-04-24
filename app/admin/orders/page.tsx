@@ -45,11 +45,26 @@ function getStatusMeta(status: OrderStatusValue) {
   }
 }
 
+function getStatusWhatsappMessage(status: OrderStatusValue) {
+  switch (status) {
+    case OrderStatus.NOUVELLE:
+      return "Votre commande a bien ete recue et elle est en attente de traitement.";
+    case OrderStatus.CONFIRMEE:
+      return "Votre commande a ete confirmee et sera preparee tres bientot.";
+    case OrderStatus.PREPAREE:
+      return "Votre commande est prete et en cours de livraison.";
+    case OrderStatus.LIVREE:
+      return "Votre commande a ete livree. Merci pour votre confiance.";
+    default:
+      return "Votre commande a ete annulee. N'hesitez pas a nous contacter si besoin.";
+  }
+}
+
 export default async function AdminOrdersPage() {
   await requireAdminSession();
   const [orders, settings]: [OrdersList, Awaited<ReturnType<typeof getRestaurantSettings>>] =
     await Promise.all([getOrdersList(), getRestaurantSettings()]);
-  const whatsappNumber = settings?.whatsappNumber?.replace(/\D/g, "") ?? "";
+  const restaurantName = settings?.restaurantName ?? "Restaurant";
 
   return (
     <div className="space-y-6">
@@ -86,9 +101,16 @@ export default async function AdminOrdersPage() {
           {orders.map((order: OrderRecord) => {
             const orderReference = getShortOrderReference(order.id);
             const statusMeta = getStatusMeta(order.status);
-            const whatsappLink = whatsappNumber
-              ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
-                  `Bonjour, concernant la commande ${orderReference} au nom de ${order.customerName}.`
+            const customerWhatsappNumber = order.customerPhone.replace(/\D/g, "");
+            const whatsappMessage = [
+              `Bonjour ${order.customerName},`,
+              "",
+              `${restaurantName} vous informe que la commande ${orderReference} est actuellement au statut "${statusMeta.label}".`,
+              getStatusWhatsappMessage(order.status),
+            ].join("\n");
+            const whatsappLink = customerWhatsappNumber
+              ? `https://wa.me/${customerWhatsappNumber}?text=${encodeURIComponent(
+                  whatsappMessage
                 )}`
               : null;
 

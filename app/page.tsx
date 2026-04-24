@@ -168,8 +168,8 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_21rem] 2xl:grid-cols-[minmax(0,1fr)_22rem]">
-                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid gap-5 2xl:grid-cols-[minmax(0,1fr)_20rem]">
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {featuredProducts.map((product: HighlightProduct, index: number) => (
                     <article
                       key={product.id}
@@ -228,7 +228,7 @@ export default async function HomePage() {
                   ))}
                 </div>
 
-                <div className="grid gap-4 self-start xl:sticky xl:top-6">
+                <div className="grid gap-4 self-start 2xl:sticky 2xl:top-6">
                   <div className="promo-panel rounded-[2rem] p-6 text-white shadow-[0_24px_44px_rgba(154,52,18,0.24)]">
                     <p className="inline-flex rounded-full bg-white/16 px-4 py-1 text-xs font-black uppercase tracking-[0.24em] text-white">
                       Offre spéciale
