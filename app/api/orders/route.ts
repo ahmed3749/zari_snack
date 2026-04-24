@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getShortOrderReference } from "@/lib/order-reference";
 import { prisma } from "@/lib/prisma";
+import { getRestaurantSettings } from "@/lib/restaurant-data";
 
 type IncomingItem = {
   productId?: unknown;
@@ -261,9 +262,7 @@ export async function POST(request: NextRequest) {
       };
     });
 
-    const settings = await prisma.restaurantSettings.findFirst({
-      orderBy: { createdAt: "asc" },
-    });
+    const settings = await getRestaurantSettings();
 
     if (!settings?.whatsappNumber) {
       return NextResponse.json(
