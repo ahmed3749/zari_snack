@@ -54,7 +54,7 @@ export default async function HomePage() {
                   </span>
                   <h1 className="section-title mt-4 text-[3.2rem] leading-[0.88] text-white md:text-8xl xl:text-[6.2rem]">
                     TACOS
-                    <span className="block text-[#ffbf1f]">YASSINOS</span>
+                    <span className="block text-[#ffbf1f]">AHMED</span>
                   </h1>
                   <p className="mt-3 text-sm font-semibold text-white md:text-lg">
                     Les meilleurs tacos de Salé
