@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
@@ -26,6 +26,7 @@ export async function saveRestaurantSettings(formData: FormData) {
     openingHours: parseText(formData.get("openingHours")) || null,
     welcomeMessage: parseText(formData.get("welcomeMessage")) || null,
     logoUrl: parseText(formData.get("logoUrl")) || null,
+    heroImageUrl: parseText(formData.get("heroImageUrl")) || null,
     deliveryFee: parseDecimal(formData.get("deliveryFee")),
   };
 
@@ -40,6 +41,7 @@ export async function saveRestaurantSettings(formData: FormData) {
     });
   }
 
+  revalidateTag("restaurant-settings", "max");
   revalidatePath("/admin/settings");
   revalidatePath("/admin/dashboard");
   revalidatePath("/");

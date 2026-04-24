@@ -4,10 +4,16 @@ import { useState } from "react";
 
 type AdminImageUploadFieldProps = {
   defaultValue?: string | null;
+  name?: string;
+  label?: string;
+  previewAlt?: string;
 };
 
 export default function AdminImageUploadField({
   defaultValue = "",
+  name = "imageUrl",
+  label = "Image du produit",
+  previewAlt = "Aperçu de l'image",
 }: AdminImageUploadFieldProps) {
   const [imageUrl, setImageUrl] = useState(defaultValue ?? "");
   const [isUploading, setIsUploading] = useState(false);
@@ -52,8 +58,8 @@ export default function AdminImageUploadField({
   return (
     <div className="space-y-3">
       <label className="space-y-2">
-        <span className="text-sm text-slate-300">Image du produit</span>
-        <input type="hidden" name="imageUrl" value={imageUrl} readOnly />
+        <span className="text-sm text-slate-300">{label}</span>
+        <input type="hidden" name={name} value={imageUrl} readOnly />
         <input
           type="text"
           value={imageUrl}
@@ -91,7 +97,7 @@ export default function AdminImageUploadField({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={imageUrl}
-            alt="Aperçu du produit"
+            alt={previewAlt}
             className="h-36 w-full rounded-xl object-cover"
           />
         </div>

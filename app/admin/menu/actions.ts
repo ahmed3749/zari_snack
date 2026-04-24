@@ -1,6 +1,6 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 import { requireAdminSession } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
@@ -76,6 +76,7 @@ function buildSizePricing(formData: FormData) {
 }
 
 function refreshAdminSurfaces() {
+  revalidateTag("public-menu", "max");
   revalidatePath("/admin/menu");
   revalidatePath("/admin/dashboard");
   revalidatePath("/menu");

@@ -38,10 +38,7 @@ export default async function HomePage() {
   const whatsappLink = settings?.whatsappNumber
     ? `https://wa.me/${settings.whatsappNumber.replace(/\D/g, "")}`
     : null;
-  const heroProduct = featuredProducts[0] ?? null;
-  const heroImage = heroProduct
-    ? getProductImageSrc(heroProduct.name, heroProduct.imageUrl, heroProduct.categoryName)
-    : "/images/fallback/generic-fallback.png";
+  const heroImage = settings?.heroImageUrl || "/images/fallback/generic-fallback.png";
 
   return (
     <div className="flex min-h-screen flex-col text-slate-900">

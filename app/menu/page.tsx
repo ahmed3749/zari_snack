@@ -4,7 +4,7 @@ import MenuClient from "../../components/menu/MenuClient";
 import type { MenuCategory, MenuProduct, MenuProductOption, MenuProductSize } from "../../components/menu/types";
 
 import { getProductImageSrc } from "@/lib/product-image";
-import { prisma } from "@/lib/prisma";
+import { getPublicMenuCategories } from "@/lib/restaurant-data";
 
 type MenuProductSizeRecord = {
   id: string;
@@ -46,45 +46,8 @@ type MenuCategoryRecord = {
 type MenuCategories = MenuCategoryRecord[];
 type HeroEntry = MenuProductRecord & { categoryName: string };
 
-export default async function MenuPage({
-  searchParams,
-}: {
-  searchParams?: Promise<{
-    cart?: string;
-  }>;
-}) {
-  await searchParams;
-  const categories: MenuCategories = await prisma.category.findMany({
-    where: {
-      active: true,
-      products: {
-        some: {
-          active: true,
-        },
-      },
-    },
-    orderBy: [{ displayOrder: "asc" }, { name: "asc" }],
-    include: {
-      products: {
-        where: {
-          active: true,
-        },
-        orderBy: { name: "asc" },
-        include: {
-          sizes: {
-            orderBy: { priceModifier: "asc" },
-          },
-          optionLinks: {
-            include: {
-              sauce: true,
-              extra: true,
-              drink: true,
-            },
-          },
-        },
-      },
-    },
-  });
+export default async function MenuPage() {
+  const categories: MenuCategories = await getPublicMenuCategories();
 
   const heroEntry: HeroEntry | null =
     categories.flatMap((category: MenuCategoryRecord) =>

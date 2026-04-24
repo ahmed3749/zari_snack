@@ -1,4 +1,5 @@
 import SectionHeading from "../../../components/SectionHeading";
+import AdminImageUploadField from "../../../components/admin/AdminImageUploadField";
 
 import { saveRestaurantSettings } from "./actions";
 
@@ -62,15 +63,19 @@ export default async function AdminSettingsPage() {
             />
           </label>
 
-          <label className="space-y-2">
-            <span className="text-sm text-slate-300">Logo URL</span>
-            <input
-              type="url"
-              name="logoUrl"
-              defaultValue={settings?.logoUrl ?? ""}
-              className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 text-slate-100"
-            />
-          </label>
+          <AdminImageUploadField
+            name="logoUrl"
+            label="Logo"
+            previewAlt="Aperçu du logo"
+            defaultValue={settings?.logoUrl ?? ""}
+          />
+
+          <AdminImageUploadField
+            name="heroImageUrl"
+            label="Image d'accueil"
+            previewAlt="Aperçu de l'image d'accueil"
+            defaultValue={settings?.heroImageUrl ?? ""}
+          />
 
           <label className="space-y-2">
             <span className="text-sm text-slate-300">Frais de livraison</span>
